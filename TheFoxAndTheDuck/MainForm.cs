@@ -74,6 +74,13 @@ namespace TheFoxAndTheDuck {
 
             e.Graphics.DrawLine(transparentPen, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y + drawingArea.Height);
             e.Graphics.DrawLine(transparentPen, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y + drawingArea.Height);
+
+            double duckAngle = Math.Atan2(duck.Position.Y, duck.Position.X);
+            var duckProjection = new PointF(
+                x: pondCenterPosition.X + (pond.Radius - 2f) * Convert.ToSingle(Math.Cos(-duckAngle)),
+                y: pondCenterPosition.Y - (pond.Radius - 2f) * Convert.ToSingle(Math.Sin(-duckAngle))
+            );
+            e.Graphics.DrawLine(new Pen(Color.FromArgb(alpha: 100, baseColor: Color.Azure)), pondCenterPosition, duckProjection);
 #endif
         }
 
