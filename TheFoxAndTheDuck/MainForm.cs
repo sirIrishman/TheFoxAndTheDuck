@@ -48,8 +48,8 @@ namespace TheFoxAndTheDuck {
             //draw fox
             //var foxCenterPosition = new PointF(Convert.ToSingle(pondCenterPosition.X * Math.Cos(180f - fox.PositionAngle) + pondCenterPosition.Y * Math.Sin(180f - fox.PositionAngle)), Convert.ToSingle(-pondCenterPosition.X * Math.Sin(180f - fox.PositionAngle) + pondCenterPosition.Y * Math.Cos(180f - fox.PositionAngle)));
             var foxCenterPosition = new PointF(
-                x: pondCenterPosition.X + (pond.Radius + fox.Size.Width / 2f) * Convert.ToSingle(Math.Cos(Trigonometry.ConvertDegreesToRadians(fox.PositionAngle))),
-                y: pondCenterPosition.Y - (pond.Radius + fox.Size.Height / 2f) * Convert.ToSingle(Math.Sin(Trigonometry.ConvertDegreesToRadians(fox.PositionAngle)))
+                x: pondCenterPosition.X + (pond.Radius + fox.Size.Width / 2f) * Convert.ToSingle(Math.Cos(Trigonometry.DegreesToRadians(fox.PositionAngle))),
+                y: pondCenterPosition.Y - (pond.Radius + fox.Size.Height / 2f) * Convert.ToSingle(Math.Sin(Trigonometry.DegreesToRadians(fox.PositionAngle)))
             );
             var foxTopLeftCornerPosition = new PointF(
                 x: foxCenterPosition.X - fox.Size.Width / 2f,
@@ -75,12 +75,14 @@ namespace TheFoxAndTheDuck {
             e.Graphics.DrawLine(transparentPen, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y + drawingArea.Height);
             e.Graphics.DrawLine(transparentPen, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y + drawingArea.Height);
 
-            double duckAngle = Math.Atan2(duck.Position.Y, duck.Position.X);
             var duckProjection = new PointF(
-                x: pondCenterPosition.X + (pond.Radius - 2f) * Convert.ToSingle(Math.Cos(-duckAngle)),
-                y: pondCenterPosition.Y - (pond.Radius - 2f) * Convert.ToSingle(Math.Sin(-duckAngle))
+                x: pondCenterPosition.X + (pond.Radius - 2f) * Convert.ToSingle(Math.Cos(Trigonometry.DegreesToRadians(duck.PositionAngle))),
+                y: pondCenterPosition.Y - (pond.Radius - 2f) * Convert.ToSingle(Math.Sin(Trigonometry.DegreesToRadians(duck.PositionAngle)))
             );
             e.Graphics.DrawLine(new Pen(Color.FromArgb(alpha: 100, baseColor: Color.Azure)), pondCenterPosition, duckProjection);
+
+            e.Graphics.DrawString("duck: " + duck.PositionAngle + "°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 5f));
+            e.Graphics.DrawString(" fox: " + fox.PositionAngle + "°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 15f));
 #endif
         }
 
@@ -119,7 +121,7 @@ namespace TheFoxAndTheDuck {
             duck.Move(shiftX, shiftY);
 
             // move fox
-            float pondPerimeter = Trigonometry.CirclePerimeter(pond.Radius);
+            float pondPerimeter = Trigonometry.CirclePerimeter(pond.Radius).ToFloat();
             float foxPath = Math.Abs(shiftX * fox.SpeedModifier) + Math.Abs(shiftY * fox.SpeedModifier);
             float foxPathInDegrees = foxPath / (pondPerimeter / 360f);
             fox.Move(foxPathInDegrees);
@@ -144,6 +146,7 @@ namespace TheFoxAndTheDuck {
     class Duck {
         // It's relative position to the center of the pond
         public PointF Position { get; private set; }
+        public float PositionAngle { get; private set; }
         public SizeF Size { get; private set; }
 
         public Duck(SizeF size) {
@@ -151,7 +154,9 @@ namespace TheFoxAndTheDuck {
         }
 
         public PointF Move(float shiftX, float shiftY) {
-            return (Position = new PointF(Position.X + shiftX, Position.Y + shiftY));
+            Position = new PointF(Position.X + shiftX, Position.Y + shiftY);
+            PositionAngle = -Trigonometry.RadiansToDegrees(Math.Atan2(Position.Y, Position.X)).ToFloat() % 360f;
+            return Position;
         }
     }
 
@@ -167,7 +172,8 @@ namespace TheFoxAndTheDuck {
         }
 
         public float Move(float shiftAngle) {
-            return (PositionAngle += shiftAngle);
+            PositionAngle = (PositionAngle + shiftAngle) % 360f;
+            return PositionAngle;
         }
     }
 }
