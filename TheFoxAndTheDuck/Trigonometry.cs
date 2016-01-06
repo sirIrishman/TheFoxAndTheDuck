@@ -12,5 +12,11 @@ namespace TheFoxAndTheDuck {
         public static double CirclePerimeter(double radius) {
             return 2.0 * Math.PI * radius;
         }
+
+        public static double ToPositiveDegrees(double degrees) {
+            return (degrees < 0f)
+                ? (360f + degrees % 360.0)
+                : degrees % 360.0;
+        }
     }
 }

@@ -146,7 +146,7 @@ namespace TheFoxAndTheDuck {
     class Duck {
         // It's relative position to the center of the pond
         public PointF Position { get; private set; }
-        public float PositionAngle { get; private set; }
+        public float PositionAngle { get; private set; } // in degrees
         public SizeF Size { get; private set; }
 
         public Duck(SizeF size) {
@@ -155,7 +155,7 @@ namespace TheFoxAndTheDuck {
 
         public PointF Move(float shiftX, float shiftY) {
             Position = new PointF(Position.X + shiftX, Position.Y + shiftY);
-            PositionAngle = -Trigonometry.RadiansToDegrees(Math.Atan2(Position.Y, Position.X)).ToFloat() % 360f;
+            PositionAngle = Trigonometry.ToPositiveDegrees(-Trigonometry.RadiansToDegrees(Math.Atan2(Position.Y, Position.X))).ToFloat();
             return Position;
         }
     }
@@ -172,7 +172,7 @@ namespace TheFoxAndTheDuck {
         }
 
         public float Move(float shiftAngle) {
-            PositionAngle = (PositionAngle + shiftAngle) % 360f;
+            PositionAngle = Trigonometry.ToPositiveDegrees(PositionAngle + shiftAngle).ToFloat();
             return PositionAngle;
         }
     }
