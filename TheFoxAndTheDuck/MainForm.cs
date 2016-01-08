@@ -141,10 +141,6 @@ namespace TheFoxAndTheDuck {
 
             ProblemDisplayPanel.Refresh();
         }
-
-        void ProblemTextPanel_Paint(object sender, PaintEventArgs e) {
-            ControlPaint.DrawBorder(e.Graphics, e.ClipRectangle, Color.Black, ButtonBorderStyle.Solid);
-        }
     }
 
     class Pond {
