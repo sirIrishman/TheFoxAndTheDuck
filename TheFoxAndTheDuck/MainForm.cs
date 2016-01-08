@@ -124,7 +124,19 @@ namespace TheFoxAndTheDuck {
             float pondPerimeter = Trigonometry.CirclePerimeter(pond.Radius).ToFloat();
             float foxPath = Math.Abs(shiftX * fox.SpeedModifier) + Math.Abs(shiftY * fox.SpeedModifier);
             float foxPathInDegrees = foxPath / (pondPerimeter / 360f);
-            fox.Move(foxPathInDegrees);
+
+            float distanceIfClockwise = (fox.PositionAngle > duck.PositionAngle)
+                ? fox.PositionAngle - duck.PositionAngle
+                : 360f - duck.PositionAngle + fox.PositionAngle;
+            float distanceIfCounterClockwise = (fox.PositionAngle > duck.PositionAngle)
+                ? 360f - fox.PositionAngle + duck.PositionAngle
+                : duck.PositionAngle - fox.PositionAngle;
+            if(distanceIfClockwise < distanceIfCounterClockwise) {
+                fox.Move(-Math.Min(distanceIfClockwise, foxPathInDegrees));
+            } else {
+                fox.Move(Math.Min(distanceIfCounterClockwise, foxPathInDegrees));
+            }
+
             ProblemDisplayPanel.Refresh();
         }
 
