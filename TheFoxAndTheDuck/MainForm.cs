@@ -57,13 +57,6 @@ namespace TheFoxAndTheDuck {
             );
             e.Graphics.DrawFilledEllipse(Pens.Orange, new RectangleF(foxTopLeftCornerPosition, fox.Size));
 
-            //update game status
-            bool isDuckInPond = Math.Sqrt(Math.Pow(Math.Abs(pondCenterPosition.X + duck.Position.X - (pondTopLeftCornerPosition.X + pond.Radius)), 2.0) + Math.Pow(Math.Abs(pondCenterPosition.Y + duck.Position.Y - (pondTopLeftCornerPosition.Y + pond.Radius)), 2.0)) <= pond.Radius;
-            if(!isDuckInPond) {
-                isGameOver = true;
-                GameStatusLabel.Text = "The duck succeeded to leave the pond";
-            }
-
 #if DEBUG
             var transparentPen = new Pen(Color.FromArgb(alpha: 100, baseColor: Color.Red));
             e.Graphics.DrawLine(transparentPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f);
@@ -135,6 +128,16 @@ namespace TheFoxAndTheDuck {
                 fox.Move(-Math.Min(distanceIfClockwise, foxPathInDegrees));
             } else {
                 fox.Move(Math.Min(distanceIfCounterClockwise, foxPathInDegrees));
+            }
+
+            //update game status
+            bool isDuckInPond = Math.Sqrt(Math.Pow(duck.Position.X, 2.0) + Math.Pow(duck.Position.Y, 2.0)) <= pond.Radius;
+            if(!isDuckInPond) {
+                isGameOver = true;
+                bool doesFoxCatchDuck = fox.PositionAngle == duck.PositionAngle;
+                GameStatusLabel.Text = doesFoxCatchDuck
+                    ? "Fail: the fox has caught the duck"
+                    : "Win: the duck succeeded to leave the pond";
             }
 
             ProblemDisplayPanel.Refresh();
