@@ -46,7 +46,6 @@ namespace TheFoxAndTheDuck {
             e.Graphics.DrawFilledRectangle(Pens.Brown, new RectangleF(duckTopLeftCornerPosition, duck.Size));
 
             //draw fox
-            //var foxCenterPosition = new PointF(Convert.ToSingle(pondCenterPosition.X * Math.Cos(180f - fox.PositionAngle) + pondCenterPosition.Y * Math.Sin(180f - fox.PositionAngle)), Convert.ToSingle(-pondCenterPosition.X * Math.Sin(180f - fox.PositionAngle) + pondCenterPosition.Y * Math.Cos(180f - fox.PositionAngle)));
             var foxCenterPosition = new PointF(
                 x: pondCenterPosition.X + (pond.Radius + fox.Size.Width / 2f) * Convert.ToSingle(Math.Cos(Trigonometry.DegreesToRadians(fox.PositionAngle))),
                 y: pondCenterPosition.Y - (pond.Radius + fox.Size.Height / 2f) * Convert.ToSingle(Math.Sin(Trigonometry.DegreesToRadians(fox.PositionAngle)))
@@ -58,15 +57,15 @@ namespace TheFoxAndTheDuck {
             e.Graphics.DrawFilledEllipse(Pens.Orange, new RectangleF(foxTopLeftCornerPosition, fox.Size));
 
 #if DEBUG
-            var transparentPen = new Pen(Color.FromArgb(alpha: 100, baseColor: Color.Red));
-            e.Graphics.DrawLine(transparentPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f);
-            e.Graphics.DrawLine(transparentPen, drawingArea.X + drawingArea.Width / 2f, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f, drawingArea.Y + drawingArea.Height);
+            var linesPen = new Pen(Color.FromArgb(alpha: 100, baseColor: Color.Red));
+            e.Graphics.DrawLine(linesPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f);
+            e.Graphics.DrawLine(linesPen, drawingArea.X + drawingArea.Width / 2f, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f, drawingArea.Y + drawingArea.Height);
 
-            e.Graphics.DrawLine(transparentPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f - pond.Radius, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f - pond.Radius);
-            e.Graphics.DrawLine(transparentPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f + pond.Radius, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f + pond.Radius);
+            e.Graphics.DrawLine(linesPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f - pond.Radius, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f - pond.Radius);
+            e.Graphics.DrawLine(linesPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f + pond.Radius, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f + pond.Radius);
 
-            e.Graphics.DrawLine(transparentPen, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y + drawingArea.Height);
-            e.Graphics.DrawLine(transparentPen, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y + drawingArea.Height);
+            e.Graphics.DrawLine(linesPen, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y + drawingArea.Height);
+            e.Graphics.DrawLine(linesPen, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y + drawingArea.Height);
 
             var duckProjection = new PointF(
                 x: pondCenterPosition.X + (pond.Radius - 2f) * Convert.ToSingle(Math.Cos(Trigonometry.DegreesToRadians(duck.PositionAngle))),
@@ -159,9 +158,8 @@ namespace TheFoxAndTheDuck {
     }
 
     class Duck {
-        // It's relative position to the center of the pond
-        public PointF Position { get; private set; }
-        public float PositionAngle { get; private set; } // in degrees
+        public PointF Position { get; private set; } // It's relative position to the center of the pond
+        public float PositionAngle { get; private set; } // It's position in degrees where +X axe is 0 degrees
         public SizeF Size { get; private set; }
 
         public Duck(SizeF size) {
@@ -176,8 +174,7 @@ namespace TheFoxAndTheDuck {
     }
 
     class Fox {
-        // It's position in degrees where +X axe is 0 degrees
-        public float PositionAngle { get; private set; }
+        public float PositionAngle { get; private set; } // It's position in degrees where +X axe is 0 degrees
         public SizeF Size { get; private set; }
         public float SpeedModifier { get; private set; }
 
