@@ -57,24 +57,32 @@ namespace TheFoxAndTheDuck {
             e.Graphics.DrawFilledEllipse(Pens.Orange, new RectangleF(foxTopLeftCornerPosition, fox.Size));
 
 #if DEBUG
-            var linesPen = new Pen(Color.FromArgb(alpha: 100, baseColor: Color.Red));
-            e.Graphics.DrawLine(linesPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f);
-            e.Graphics.DrawLine(linesPen, drawingArea.X + drawingArea.Width / 2f, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f, drawingArea.Y + drawingArea.Height);
-
-            e.Graphics.DrawLine(linesPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f - pond.Radius, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f - pond.Radius);
-            e.Graphics.DrawLine(linesPen, drawingArea.X + 0f, drawingArea.Y + drawingArea.Height / 2f + pond.Radius, drawingArea.X + drawingArea.Width, drawingArea.Y + drawingArea.Height / 2f + pond.Radius);
-
-            e.Graphics.DrawLine(linesPen, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f - pond.Radius, drawingArea.Y + drawingArea.Height);
-            e.Graphics.DrawLine(linesPen, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y, drawingArea.X + drawingArea.Width / 2f + pond.Radius, drawingArea.Y + drawingArea.Height);
-
+            var linesPen = new Pen(Color.FromArgb(alpha: 60, baseColor: Color.Red));
+            for(float factor = -1f; factor <= 1f; factor += 0.25f) {
+                // draw horizontal line
+                e.Graphics.DrawLine(linesPen,
+                    x1: drawingArea.X,
+                    y1: drawingArea.Y + drawingArea.Height / 2f + pond.Radius * factor,
+                    x2: drawingArea.X + drawingArea.Width,
+                    y2: drawingArea.Y + drawingArea.Height / 2f + pond.Radius * factor
+                );
+                // draw vertical line
+                e.Graphics.DrawLine(linesPen,
+                    x1: drawingArea.X + drawingArea.Width / 2f + pond.Radius * factor,
+                    y1: drawingArea.Y,
+                    x2: drawingArea.X + drawingArea.Width / 2f + pond.Radius * factor,
+                    y2: drawingArea.Y + drawingArea.Height
+                );
+            }
+            // draw duck projection line
             var duckProjection = new PointF(
                 x: pondCenterPosition.X + (pond.Radius - 2f) * Convert.ToSingle(Math.Cos(Trigonometry.DegreesToRadians(duck.PositionAngle))),
                 y: pondCenterPosition.Y - (pond.Radius - 2f) * Convert.ToSingle(Math.Sin(Trigonometry.DegreesToRadians(duck.PositionAngle)))
             );
             e.Graphics.DrawLine(new Pen(Color.FromArgb(alpha: 100, baseColor: Color.Azure)), pondCenterPosition, duckProjection);
-
-            e.Graphics.DrawString("duck: " + duck.PositionAngle + "°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 5f));
-            e.Graphics.DrawString(" fox: " + fox.PositionAngle + "°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 15f));
+            // draw debug info
+            e.Graphics.DrawString("duck: " + duck.PositionAngle + "°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 0f));
+            e.Graphics.DrawString(" fox: " + fox.PositionAngle + "°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 9f));
 #endif
         }
 
