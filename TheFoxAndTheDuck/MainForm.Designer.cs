@@ -48,7 +48,7 @@
             // 
             this.HelpTextStatusLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.HelpTextStatusLabel.Name = "HelpTextStatusLabel";
-            this.HelpTextStatusLabel.Size = new System.Drawing.Size(496, 19);
+            this.HelpTextStatusLabel.Size = new System.Drawing.Size(527, 19);
             this.HelpTextStatusLabel.Spring = true;
             this.HelpTextStatusLabel.Text = "Use arrow keys (←, ↑, ↓, →) to move the duck. Press R to restart";
             this.HelpTextStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -97,6 +97,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "The Fox and The Duck";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyUp);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);

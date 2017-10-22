@@ -6,6 +6,7 @@ namespace TheFoxAndTheDuck {
     public partial class MainForm : Form {
         const float commonSpeedModifier = 2f;
         bool isGameOver;
+        bool isKeyDownPressed, isKeyUpPressed, isKeyLeftPressed, isKeyRightPressed;
         Pond pond;
         Duck duck;
         Fox fox;
@@ -13,11 +14,12 @@ namespace TheFoxAndTheDuck {
         public MainForm() {
             InitializeComponent();
             ActiveControl = null;
-            InitializeCharacters();
+            Initialize();
         }
 
-        void InitializeCharacters() {
+        void Initialize() {
             isGameOver = false;
+            isKeyDownPressed = isKeyUpPressed = isKeyLeftPressed = isKeyRightPressed = false;
             pond = new Pond(radius: 120f);
             duck = new Duck(new SizeF(4f, 4f));
             fox = new Fox(new SizeF(6f, 6f), speedModifier: 4f);
@@ -81,14 +83,15 @@ namespace TheFoxAndTheDuck {
             );
             e.Graphics.DrawLine(new Pen(Color.FromArgb(alpha: 100, baseColor: Color.Azure)), pondCenterPosition, duckProjection);
             // draw debug info
-            e.Graphics.DrawString("duck: " + duck.PositionAngle + "°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 0f));
-            e.Graphics.DrawString(" fox: " + fox.PositionAngle + "°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 9f));
+            e.Graphics.DrawString($"duck: {duck.PositionAngle}°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 0f));
+            e.Graphics.DrawString($" fox: {fox.PositionAngle}°", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 9f));
+            e.Graphics.DrawString($"   ←: {isKeyLeftPressed.ToString().Substring(0, 1)}; ↑: {isKeyUpPressed.ToString().Substring(0, 1)}; ↓: {isKeyDownPressed.ToString().Substring(0, 1)}; →: {isKeyRightPressed.ToString().Substring(0, 1)}", new Font(FontFamily.GenericMonospace, 8f), Brushes.Black, new PointF(x: 10f, y: 18f));
 #endif
         }
 
         void MainForm_KeyDown(object sender, KeyEventArgs e) {
             if(e.KeyData == Keys.R) {
-                InitializeCharacters();
+                Initialize();
                 ProblemDisplayPanel.Refresh();
                 return;
             }
@@ -97,24 +100,51 @@ namespace TheFoxAndTheDuck {
                 return;
             }
 
-            float shiftX = 0f;
-            float shiftY = 0f;
             switch(e.KeyData) {
-                case Keys.Left:
-                    shiftX = -1f;
+                case (Keys.Left):
+                    isKeyLeftPressed = true;
                     break;
-                case Keys.Up:
-                    shiftY = -1f;
+                case (Keys.Right):
+                    isKeyRightPressed = true;
                     break;
-                case Keys.Right:
-                    shiftX = 1f;
+                case (Keys.Up):
+                    isKeyUpPressed = true;
                     break;
-                case Keys.Down:
-                    shiftY = 1f;
+                case (Keys.Down):
+                    isKeyDownPressed = true;
                     break;
-                default:
-                    return;
             }
+
+            MoveCharacters();
+
+            //update game status
+            bool isDuckInPond = Math.Sqrt(Math.Pow(duck.Position.X, 2.0) + Math.Pow(duck.Position.Y, 2.0)) <= pond.Radius;
+            if(!isDuckInPond) {
+                isGameOver = true;
+                bool doesFoxCatchDuck = fox.PositionAngle == duck.PositionAngle;
+                GameStatusLabel.Text = doesFoxCatchDuck
+                    ? "Fail: the fox has caught the duck"
+                    : "Win: the duck succeeded to leave the pond";
+            }
+
+            ProblemDisplayPanel.Refresh();
+        }
+
+        void MoveCharacters() {
+            float shiftX = 0f;
+            if(isKeyLeftPressed) {
+                shiftX = -1f;
+            } else if(isKeyRightPressed) {
+                shiftX = 1f;
+            }
+
+            float shiftY = 0f;
+            if(isKeyUpPressed) {
+                shiftY = -1f;
+            } else if(isKeyDownPressed) {
+                shiftY = 1f;
+            }
+
             // move duck
             shiftX *= commonSpeedModifier;
             shiftY *= commonSpeedModifier;
@@ -136,18 +166,23 @@ namespace TheFoxAndTheDuck {
             } else {
                 fox.Move(Math.Min(distanceIfCounterClockwise, foxPathInDegrees));
             }
+        }
 
-            //update game status
-            bool isDuckInPond = Math.Sqrt(Math.Pow(duck.Position.X, 2.0) + Math.Pow(duck.Position.Y, 2.0)) <= pond.Radius;
-            if(!isDuckInPond) {
-                isGameOver = true;
-                bool doesFoxCatchDuck = fox.PositionAngle == duck.PositionAngle;
-                GameStatusLabel.Text = doesFoxCatchDuck
-                    ? "Fail: the fox has caught the duck"
-                    : "Win: the duck succeeded to leave the pond";
+        void MainForm_KeyUp(object sender, KeyEventArgs e) {
+            switch(e.KeyData) {
+                case (Keys.Left):
+                    isKeyLeftPressed = false;
+                    break;
+                case (Keys.Right):
+                    isKeyRightPressed = false;
+                    break;
+                case (Keys.Up):
+                    isKeyUpPressed = false;
+                    break;
+                case (Keys.Down):
+                    isKeyDownPressed = false;
+                    break;
             }
-
-            ProblemDisplayPanel.Refresh();
         }
     }
 
